@@ -2,6 +2,7 @@
 /******************************
 OS PHOTOGRAPHY
 page.class.php
+Version: Espresso
 ******************************/
 
 $scriptName = 'page.class.php'
