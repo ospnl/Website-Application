@@ -77,58 +77,58 @@ class Page{
 		}
 	}
 
-    public function setPageName($newPageName){
+	public function setPageName($newPageName){
 		
 		// Trace logging
 		if(LOG_LEVEL==3){
 			error_log($scriptName.' [INFO]: Entering method setPageName');
 		}
 		
-        //Although leaving unencoded pagenames may work; it is strongly discouraged.
-        $urlEncodedPageName=urlencode($newPageName);
+        	//Although leaving unencoded pagenames may work; it is strongly discouraged.
+        	$urlEncodedPageName=urlencode($newPageName);
 
-        //check the pagename is not null
-        if(empty($urlEncodedPageName)){			
+        	//check the pagename is not null
+        	if(empty($urlEncodedPageName)){			
 			// Trace logging
 			if(LOG_LEVEL>0){
 				error_log($scriptName.' [ERROR]: pageName cannot be null');
 			}
 			
-            throw new Exception('Pagename cannot be null.');
-            return false;
-        }
+	            throw new Exception('Pagename cannot be null.');
+	            return false;
+        	}
 
-        //check the page is no longer than 100 characters
-        if(strlen($urlEncodedPageName)>100){
-		
+	        //check the page is no longer than 100 characters
+	        if(strlen($urlEncodedPageName)>100){
+			
 			// Trace logging
 			if(LOG_LEVEL>0){
 				error_log($scriptName.' [ERROR]: pageName cannot exceed 100 characters');
 			}
-			
-            throw new Exception('Pagename exceeds character limit.');
-            return false;
-        }
+				
+	        	throw new Exception('Pagename exceeds character limit.');
+	        	return false;
+	        }
 
-        if(!$this->pageName=$urlEncodedPageName){
+        	if(!$this->pageName=$urlEncodedPageName){
 		
 			// Trace logging
 			if(LOG_LEVEL>0){
 				error_log($scriptName.' [ERROR]: Could not set pageName attribute.');
 			}
 			
-            throw new Exception('Could not set pagename attribute.');
-            return false;
-        }
-    }
+        		throw new Exception('Could not set pagename attribute.');
+            		return false;
+        	}
+    	}
 
-    public function doesPageExist($pageName,$systemPage=0){
+	public function doesPageExist($pageName,$systemPage=0){
 		// Trace logging
 		if(LOG_LEVEL==3){
 			error_log($scriptName.' [INFO]: Entering method doesPageExist');
 		}
-        try{
 		
+		try{
 			if($systemPage==1){
 				// Trace logging
 				if(LOG_LEVEL==3){
@@ -150,34 +150,34 @@ class Page{
 			$num=$pageQuery->execute();
 			$num=$pageQuery->rowCount();
 
-            if($num==0){
-                // No records found; the page does not exist
-                return false;
-            }
-            elseif($num==1){
-                // One record found; the page exists
-                return true;
-            }
-            else{
-                // More than one record found; something is wrong.
-                throw new Exception('More than one record has been found for page '.$pageName);
-            }
-        }
-        catch(Exception $e){
-            // Create error message
-            $errorMessage='Requested URL: '.$_SERVER['REQUEST_URI']."\n";
-            $errorMessage.='IP Address: '.$_SERVER['REMOTE_ADDR']."\n";
-            $errorMessage.='User agent: '.$_SERVER['HTTP_USER_AGENT']."\n";
-            $errorMessage.='User language: '.$this->userLanguage."\n";
-            $errorMessage.='Class: page'."\n";
-            $errorMessage.='Method: doesPageExist'."\n";
-            $errorMessage.='Error: '.$e->getMessage()."\n";
-            $errorMessage.='Trace: '.$e->getTraceAsString()."\n";
-            $errorMessage.='$pageName: '.$pageName."\n";
-
-            // Log error message into database
-            $system=new systemConfiguration();
-            $system->logError($errorMessage,2);
+			if($num==0){
+				// No records found; the page does not exist
+				return false;
+			}
+			elseif($num==1){
+				// One record found; the page exists
+				return true;
+			}
+			else{
+				// More than one record found; something is wrong.
+				throw new Exception('More than one record has been found for page '.$pageName);
+			}
+        	}
+        	catch(Exception $e){
+			// Create error message
+			$errorMessage='Requested URL: '.$_SERVER['REQUEST_URI']."\n";
+			$errorMessage.='IP Address: '.$_SERVER['REMOTE_ADDR']."\n";
+			$errorMessage.='User agent: '.$_SERVER['HTTP_USER_AGENT']."\n";
+			$errorMessage.='User language: '.$this->userLanguage."\n";
+			$errorMessage.='Class: page'."\n";
+			$errorMessage.='Method: doesPageExist'."\n";
+			$errorMessage.='Error: '.$e->getMessage()."\n";
+			$errorMessage.='Trace: '.$e->getTraceAsString()."\n";
+			$errorMessage.='$pageName: '.$pageName."\n";
+			
+			// Log error message into database
+			$system=new systemConfiguration();
+			$system->logError($errorMessage,2);
 			if(USE_NEWURL_STYLE){
 				header('Location: '.WEBSITE_URL.$this->userLanguage.'/500');
 			}
@@ -185,8 +185,8 @@ class Page{
 				header('Location: '.WEBSITE_URL.'500_'.$this->userLanguage.'.html');
 			}
 
-        }
-    }
+        	}
+	}
 
     public function errorPage($errorCode){
         try{
