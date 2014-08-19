@@ -1,9 +1,10 @@
 <?php
-/*
-PURE-SITES
+/******************************
+OS PHOTOGRAPHY
+/index.php
+******************************/
 
-Last modified: 03-03-2012
-*/
+$scriptName = '/index.php'
 
 // Enable Gzip output compression
 // ob_start("ob_gzhandler");
