@@ -1,92 +1,154 @@
 <?php
-/*
- * LAST REVISED
- * 04/12/11
- *
- */
+/******************************
+OS PHOTOGRAPHY
+page.class.php
+******************************/
 
+$scriptName = 'page.class.php'
 
 class Page{
-    private $pageName;
-    private $pageLanguage;
-    private $cacheable;
-    private $userLanguage;
-    private $template;
+	private $pageName;
+	private $pageLanguage;
+	private $cacheable;
+	private $userLanguage;
+	private $template;
 	private $isTemplateModern;
 	private $templateLoadScript;
 	private $jQueryPageFunctions;
-    private $resources;
-    private $code;
-    private $title;
+	private $resources;
+	private $code;
+	private $title;
 	private $pageMenuName;
 	private $pageHyperlink;
 	private $isPageExternal;
 	private $doesLinkOpenInNewWindow;
-    private $keywords;
-    private $description;
-    private $content;
-    private $modernContent;
-    private $menu;
-    private $starttime;
-    private $dontProcessGalleries;
+	private $keywords;
+	private $description;
+	private $content;
+	private $modernContent;
+	private $menu;
+	private $starttime;
+	private $dontProcessGalleries;
 	private $dontProcessForms;
-    private $system;
-    private $isWidget;
+	private $system;
+	private $isWidget;
 	private $languageBarStyle;
 
-    public function __construct(){
-        //Initialise attributes
-        $this->cacheable=0;
-        $this->pageName='';
-        $this->pageLanguage='';
-        $this->resources='';
-        $this->code='';
-        $this->menu='';
-        $this->starttime=microtime();
-        $this->userLanguage=$this->getUserLanguage();
-        $this->dontProcessGalleries=0;
+	public function __construct(){
+		
+		// Trace logging
+		if(LOG_LEVEL==3){
+			error_log($scriptName.': Constructing');
+		}
+		
+		//Initialise attributes
+		$this->cacheable=0;
+		$this->pageName='';
+		$this->pageLanguage='';
+		$this->resources='';
+		$this->code='';
+		$this->menu='';
+		$this->starttime=microtime();
+		$this->userLanguage=$this->getUserLanguage();
+		$this->dontProcessGalleries=0;
 		$this->dontProcessForms=0;
-        $this->system=0;
-        $this->isWidget=false;
+		$this->system=0;
+		$this->isWidget=false;
 		$this->languageBarStyle='';
+		
+		// Trace logging
+		if(LOG_LEVEL==3){
+			error_log($scriptName.' [INFO]: Finished initialising attributes');
+		}
 
-        // Set regional settings - this sets regional settings such as timezones and date formats in MySQL
-        $regionalSettingsQuery=DB::getInstance()->prepare("CALL sp_loadRegionalSettings(:language)");
-        $regionalSettingsQuery->bindParam(':language',userControl::user()->getUserLanguage());
-        $regionalSettingsQuery->execute();
-    }
+		// Trace logging
+		if(LOG_LEVEL==3){
+			error_log($scriptName.' [INFO]: Getting ready to retrieve regional settings from MySQL');
+		}
+		
+		// Set regional settings - this sets regional settings such as timezones and date formats in MySQL
+		$regionalSettingsQuery=DB::getInstance()->prepare("CALL sp_loadRegionalSettings(:language)");
+		$regionalSettingsQuery->bindParam(':language',userControl::user()->getUserLanguage());
+		$regionalSettingsQuery->execute();
+		
+		// Trace logging
+		if(LOG_LEVEL==3){
+			error_log($scriptName.' [INFO]: Retrieved regional settings from MySQL');
+		}
+	}
 
     public function setPageName($newPageName){
+		
+		// Trace logging
+		if(LOG_LEVEL==3){
+			error_log($scriptName.' [INFO]: Entering method setPageName');
+		}
+		
         //Although leaving unencoded pagenames may work; it is strongly discouraged.
         $urlEncodedPageName=urlencode($newPageName);
 
         //check the pagename is not null
-        if(empty($urlEncodedPageName)){
+        if(empty($urlEncodedPageName)){			
+			// Trace logging
+			if(LOG_LEVEL>0){
+				error_log($scriptName.' [ERROR]: pageName cannot be null');
+			}
+			
             throw new Exception('Pagename cannot be null.');
             return false;
         }
 
         //check the page is no longer than 100 characters
         if(strlen($urlEncodedPageName)>100){
+		
+			// Trace logging
+			if(LOG_LEVEL>0){
+				error_log($scriptName.' [ERROR]: pageName cannot exceed 100 characters');
+			}
+			
             throw new Exception('Pagename exceeds character limit.');
             return false;
         }
 
         if(!$this->pageName=$urlEncodedPageName){
+		
+			// Trace logging
+			if(LOG_LEVEL>0){
+				error_log($scriptName.' [ERROR]: Could not set pageName attribute.');
+			}
+			
             throw new Exception('Could not set pagename attribute.');
             return false;
         }
     }
 
-    public function doesPageExist($pageName){
-
+    public function doesPageExist($pageName,$systemPage=0){
+		// Trace logging
+		if(LOG_LEVEL==3){
+			error_log($scriptName.' [INFO]: Entering method doesPageExist');
+		}
         try{
-            // Query to return the amount of pages with the specified pagename
-            // In theory the query should only return 0 or 1 row
-            $pageQuery=DB::getInstance()->prepare("SELECT `pagename` FROM `pages` WHERE `deleted`=0 AND `system`=0 AND`pagename`=:pagename");
-            $pageQuery->bindParam(':pagename',$pageName,PDO::PARAM_STR);
-            $num=$pageQuery->execute();
-            $num=$pageQuery->rowCount();
+		
+			if($systemPage==1){
+				// Trace logging
+				if(LOG_LEVEL==3){
+					error_log($scriptName.' [INFO]: systemPage parameter has been passed with a value of 1. Now checking numbers of system pages');
+					$pageQuery=DB::getInstance()->prepare("SELECT `pagename` FROM `pages` WHERE `deleted`=0 AND `system`=1 AND`pagename`=:pagename");
+				}		
+			}
+			else{
+				// Trace logging
+				if(LOG_LEVEL==3){
+					error_log($scriptName.' [INFO]: systemPage parameter has been passed with a value of 0. Now checking numbers of regular pages');
+				}
+				$pageQuery=DB::getInstance()->prepare("SELECT `pagename` FROM `pages` WHERE `deleted`=0 AND `system`=0 AND`pagename`=:pagename");
+			}
+				
+			// Query to return the amount of pages with the specified pagename
+			// In theory the query should only return 0 or 1 row
+			$pageQuery->bindParam(':pagename',$pageName,PDO::PARAM_STR);
+			$num=$pageQuery->execute();
+			$num=$pageQuery->rowCount();
 
             if($num==0){
                 // No records found; the page does not exist
@@ -117,54 +179,6 @@ class Page{
             $system=new systemConfiguration();
             $system->logError($errorMessage,2);
 			if(USE_NEWURL_STYLE){
-				header('Location: '.WEBSITE_URL.$this->userLanguage.'/500');
-			}
-			else{
-				header('Location: '.WEBSITE_URL.'500_'.$this->userLanguage.'.html');
-			}
-
-        }
-    }
-	
-	public function doesSysPageExist($pageName){
-
-        try{
-            // Query to return the amount of pages with the specified pagename
-            // In theory the query should only return 0 or 1 row
-            $pageQuery=DB::getInstance()->prepare("SELECT `pagename` FROM `pages` WHERE `deleted`=0 AND `system`=1 AND`pagename`=:pagename");
-            $pageQuery->bindParam(':pagename',$pageName,PDO::PARAM_STR);
-            $num=$pageQuery->execute();
-            $num=$pageQuery->rowCount();
-
-            if($num==0){
-                // No records found; the page does not exist
-                return false;
-            }
-            elseif($num==1){
-                // One record found; the page exists
-                return true;
-            }
-            else{
-                // More than one record found; something is wrong.
-                throw new Exception('More than one record has been found for page '.$pageName);
-            }
-        }
-        catch(Exception $e){
-            // Create error message
-            $errorMessage='Requested URL: '.$_SERVER['REQUEST_URI']."\n";
-            $errorMessage.='IP Address: '.$_SERVER['REMOTE_ADDR']."\n";
-            $errorMessage.='User agent: '.$_SERVER['HTTP_USER_AGENT']."\n";
-            $errorMessage.='User language: '.$this->userLanguage."\n";
-            $errorMessage.='Class: page'."\n";
-            $errorMessage.='Method: doesPageExist'."\n";
-            $errorMessage.='Error: '.$e->getMessage()."\n";
-            $errorMessage.='Trace: '.$e->getTraceAsString()."\n";
-            $errorMessage.='$pageName: '.$pageName."\n";
-
-            // Log error message into database
-            $system=new systemConfiguration();
-            $system->logError($errorMessage,2);
-            if(USE_NEWURL_STYLE){
 				header('Location: '.WEBSITE_URL.$this->userLanguage.'/500');
 			}
 			else{
@@ -215,12 +229,36 @@ class Page{
 
     }
 
-    public function setCacheable(){
-        if($this->cacheable=1){}
-        else
-        {
-                throw new Exception('Could not set cacheable attribute.');
-        }
+	public function setPageAttribute($propertyName='',$propertyValue=''){
+	
+		switch($propertyName){
+			case: 'cacheable':
+				$this->cacheable=1;
+				break;
+				
+			case: 'language':
+				$this->pageLanguage=$propertyValue;
+				break;
+				
+			case: 'title':
+				$this->title=$propertyValue;
+				break;
+				
+			case: 'description':
+				$this->description=$propertyValue;
+				break;
+				
+			case: 'keywords':
+				$this->pageLanguage=$propertyValue;
+				break;
+				
+			case: 'pagename':
+				setPageName($propertyValue);
+				break;
+			
+			default:
+				break;
+		}
     }
 
     public function createPage($pageName){
@@ -914,27 +952,6 @@ class Page{
         catch(Exception $e){
 
         }
-    }
-
-    public function setPageLanguage($language){
-        try{
-            $this->pageLanguage=$language;
-        }
-        catch(Exception $e){
-
-        }
-    }
-
-    public function setPageTitle($title){
-        $this->title=$title;
-    }
-
-    public function setPageKeywords($keywords){
-        $this->keywords=$keywords;
-    }
-
-    public function setPageDescription($description){
-        $this->description=$description;
     }
 
     public function addPageContent($content){
@@ -1705,4 +1722,21 @@ class Page{
     }
 }
 
+
+/*
+Variables to be added:
+
+{{PAGENAME}}
+{{BROWSER}}
+{{GENERATION_TIME}}
+{{GENERATION_DATE}}
+{{GENERATION_MONTH}}
+{{GENERATION_YEAR}}
+{{SITEURL}}
+{{DESCRIPTION}}
+{{KEYWORDS}}
+{{TITLE}}
+{{LANGUAGENAME}}
+
+*/
 ?>
