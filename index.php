@@ -1,9 +1,10 @@
 <?php
-/*
-PURE-SITES
+/******************************
+OS PHOTOGRAPHY
+/index.php
+******************************/
 
-Last modified: 03-03-2012
-*/
+$scriptName = '/index.php'
 
 // Enable Gzip output compression
 // ob_start("ob_gzhandler");
@@ -38,7 +39,7 @@ if($requestedPage==null){
 
 
 // Check the page exists; if it does not exist (even as an error page) forward to 404 page
-if(!$page->doesPageExist($requestedPage)&&!$page->doesSysPageExist($requestedPage)){
+if(!$page->doesPageExist($requestedPage,0)&&$page->doesPageExist($requestedPage,1)){
 	$page->errorPage('404');
 	exit;
 }
