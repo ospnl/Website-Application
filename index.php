@@ -2,12 +2,13 @@
 /******************************
 OS PHOTOGRAPHY
 /index.php
+Version: Espresso
 ******************************/
 
 $scriptName = '/index.php'
 
 // Enable Gzip output compression
-// ob_start("ob_gzhandler");
+ob_start("ob_gzhandler");
 
 // Start user session
 session_start();
@@ -35,8 +36,6 @@ if($requestedPage==null){
 	header('Location: '.WEBSITE_URL.userControl::user()->getUserLanguage().'/home');
 	exit;
 }
-
-
 
 // Check the page exists; if it does not exist (even as an error page) forward to 404 page
 if(!$page->doesPageExist($requestedPage,0)&&$page->doesPageExist($requestedPage,1)){
