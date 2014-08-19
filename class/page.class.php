@@ -1325,7 +1325,42 @@ class Page{
 	}
 
 
-    public function display(){
+	public function display($type='regular'){
+		
+		// Check if resource tracker
+		if(isset($_SESSION[WEBSITE_URL.'showstringid'])){
+			$showStringId=$_SESSION[WEBSITE_URL.'showstringid'];
+		}
+		
+		// Determine cache path
+		if($type='error'){
+			$pageCachePath=CACHE_DIRECTORY.'error/'.$this->pageName.'_'.$this->pageLanguage;
+		}
+		elseif($type='widget'){
+			$pageCachePath=CACHE_DIRECTORY.'widget/'.$this->pageName.'_'.$this->pageLanguage;
+		}
+		else{
+			$pageCachePath=CACHE_DIRECTORY.$this->pageName.'_'.$this->pageLanguage;
+		}
+		
+		// Checking if a cached version of the page is available in the cache
+		if(file_exists($pageCachePath)&&DISABLE_CACHING==FALSE&&$showStringId<>true&&!isset($_POST['__FORMSTATE'])){
+			$cacheFileHandle = fopen(CACHE_DIRECTORY.$this->pageName.'_'.$this->pageLanguage, 'r');
+			$this->code=fread($cacheFileHandle,filesize($pageCachePath));
+			fclose($cacheFileHandle);
+		}
+		else{
+			
+			// Replace content variable on the template
+			$this->code=str_replace('{{CONTENT}}',$this->content,$this->code);
+			
+			// Process resources
+			$this->processResources();
+		}
+		
+	}
+	
+    public function displayold(){
 			
 			error_log("Entering the display function at " .date("r"));
 			
