@@ -259,7 +259,39 @@ class Page{
 			default:
 				break;
 		}
-    }
+	}
+	
+	public function getPageAttribute($propertyName=''){
+	
+		switch($propertyName){
+			case: 'cacheable':
+				return $this->cacheable;
+				break;
+				
+			case: 'language':
+				return $this->pageLanguage;
+				break;
+				
+			case: 'title':
+				return $this->title;
+				break;
+				
+			case: 'description':
+				return $this->description;
+				break;
+				
+			case: 'keywords':
+				return $this->pageLanguage;
+				break;
+				
+			//case: 'pagename':
+			//	setPageName($propertyValue);
+			//	break;
+			
+			default:
+				break;
+		}
+	}
 
     public function createPage($pageName){
             try
