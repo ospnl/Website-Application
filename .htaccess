@@ -1,0 +1,19 @@
+RewriteEngine on
+RewriteBase /
+RewriteRule ^([a-z]{2})/admin/ajax/([^_]*)$ /admin/ajax/$2?l=$1 [L]
+RewriteRule ^widget/([^_]*)$ /index.php?w=$1 [L]
+RewriteRule ^([a-z]{2})/admin$ /admin/index.php?l=$1 [L]
+RewriteRule ^([a-z]{2})/admin/ajax$ /admin/ajax/index.php?l=$1 [L]
+RewriteCond %{QUERY_STRING} ^(.*)$
+RewriteRule ^([a-z]{2})/admin/([^_]*) /admin/$2?%1&l=$1 [L]
+RewriteCond %{REQUEST_URI} !^/admin
+RewriteCond %{REQUEST_URI} !^/js
+RewriteCond %{REQUEST_URI} !^/css
+RewriteCond %{REQUEST_URI} !^/images
+RewriteRule ^([a-z]{2})/([^_]*)$ /index.php?l=$1&p=$2 [L]
+RewriteRule ^([a-z]{2})$ /index.php?l=$1 [L]
+RewriteRule ^upload/(100|250|400|800|1200|original)/([a-z0-9]{32})\.([a-z]{3})$ /image.php?imageid=$2&size=$1&extension=$3 [L]
+Options -Indexes
+ErrorDocument 403 /index.php?p=403
+ErrorDocument 404 /index.php?p=404
+ErrorDocument 500 /index.php?p=500

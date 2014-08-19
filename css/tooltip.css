@@ -1,0 +1,41 @@
+img{border:none;}
+
+ul.tooltip{
+	padding-left:10px;
+	padding-right:10px;
+	text-indent:0;
+}
+
+ul.tooltip,ul.tooltip li{
+	margin:0;
+	padding:0;
+}
+ul.tooltip li{
+	list-style:none;
+	float:left;
+	display:inline;
+	margin-right:10px;
+}
+
+#preview{
+	position:absolute;
+	border:1px solid #ccc;
+	background:#333;
+	padding:5px;
+	display:none;
+	color:#fff;
+	text-indent:0;
+}
+
+div.gallery{
+	background-image:url(../images/gallery.png);
+	background-repeat:no-repeat;
+	background-color: #e0edfe;
+	background-position: 5px 5px;
+	padding-top:30px;
+	padding-bottom:20px;
+	display:block;
+	padding-left:10px;
+	padding-right:10px;
+	margin-top:15px;
+}
